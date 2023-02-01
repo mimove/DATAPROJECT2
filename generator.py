@@ -11,6 +11,8 @@ import uuid
 import random
 import logging
 import argparse
+import os
+import numpy as np
 import google.auth
 from faker import Faker
 from datetime import datetime
@@ -47,7 +49,7 @@ class PubSubMessages:
         json_str = json.dumps(message)
         topic_path = self.publisher.topic_path(self.project_id, self.topic_name)
         publish_future = self.publisher.publish(topic_path, json_str.encode("utf-8"))
-        logging.info("A New transaction has been registered. Id: %s", message['Panel_id'])
+        logging.info("A New transaction has been registered. Id: %s", message['user_id'])
 
     def __exit__(self):
         self.publisher.transport.close()
@@ -56,18 +58,45 @@ class PubSubMessages:
 
 #Generator Code
 def generateMockData():
-    panel_id = random.choice(['pF8z9GBG', 'XsEOhUOT', '89x5FhyA', 'S3yG1alL', '5pz386iG'])
-    transaction_tmp = str(datetime.now())
-    power = random.choice(range(10, 101))
-    working_panel = random.choice([True, False])
+    
+    global time_now 
 
-    #Return values
-    return {
-        "Panel_id": panel_id,
-        "Transacion_Timestamp": transaction_tmp,
-        "Power": power,
-        "Working_Panel": working_panel  
-    }
+    data={}
+
+    user_id = random.choice(['pF8z9GBG', 'XsEOhUOT', '89x5FhyA', 'S3yG1alL', '5pz386iG'])
+
+    h2sec = 3600
+
+    min2sec = 60
+
+    # initial_time = 13*h2sec
+
+    # final_time = 21*h2sec
+
+    time_now = datetime.now() 
+
+    current_minute_seconds = time_now.minute * 60 + time_now.second
+
+    current_time_seconds = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+
+    initial_time = time_now.minute * min2sec
+
+    final_time = (time_now.minute + 8) * min2sec
+
+    mean_time = (initial_time+final_time) / 2
+
+    maxpow = 400
+
+    power_panel = maxpow/(np.cosh((current_minute_seconds-initial_time)*(4/(mean_time-initial_time))-4)**(0.8)) 
+
+    data["user_id"]= user_id
+
+    data["power_panel"] = power_panel
+
+    data["current_time"] = str(time_now)
+
+    return data
+
 
 def run_generator(project_id, topic_name):
     pubsub_class = PubSubMessages(project_id, topic_name)
