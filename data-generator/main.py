@@ -112,9 +112,6 @@ while True:
 
       print(data)
 
-
-
-
    if numcon<topcontainers:
     create=random.randint(0,topcontainers-numcon)
 
@@ -138,3 +135,7 @@ while True:
         list_ids.append(item)
     
    time.sleep(1)
+
+
+
+
