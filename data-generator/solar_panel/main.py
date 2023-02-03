@@ -15,8 +15,8 @@ topic_id='topic_test'
 time_lapse=2
 
 
-time_now = datetime.datetime.now() 
 
+time_now = datetime.datetime.now() 
 
 
 def generatedata():
@@ -25,27 +25,41 @@ def generatedata():
 
     data={}
 
+
+    maxpow = 400
+
     h2sec = 3600
 
     min2sec = 60
 
+
+    #######################
+    # INTERVAL OF 8 HOURS
+
     # initial_time = 13*h2sec
 
     # final_time = 21*h2sec
+    #######################
+
+    #######################
+    # INTERVAL OF 8 MINUTES FOR TESTING PURPOUSES
+    #######################
 
     time_now = datetime.datetime.now() 
-
-    current_minute_seconds = time_now.minute * 60 + time_now.second
-
-    current_time_seconds = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
     initial_time = time_now.minute * min2sec
 
     final_time = (time_now.minute + 8) * min2sec
 
     mean_time = (initial_time+final_time) / 2
+    #######################
 
-    maxpow = 400
+
+    current_minute_seconds = time_now.minute * 60 + time_now.second
+
+    current_time_seconds = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+
+
 
     power_panel = maxpow/(np.cosh((current_minute_seconds-initial_time)*(4/(mean_time-initial_time))-4)**(0.8)) 
 
@@ -53,7 +67,9 @@ def generatedata():
 
     data["power_panel"] = power_panel
 
-    data["current_time"] = time_now
+    data["current_status"] = 1
+
+    data["current_time"] = time_now.strftime("%d/%m/%Y, %H:%M:%S")
 
     return json.dumps(data)
 
@@ -61,6 +77,7 @@ def senddata():
 
     # Coloca el código para enviar los datos a tu sistema de mensajería
     # Utiliza la variable topic id para especificar el topico destino
+    
     print(generatedata())
 
 
