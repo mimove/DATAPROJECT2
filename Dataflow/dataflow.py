@@ -142,10 +142,6 @@ def run():
                     required=True,
                     help='GCP cloud project name')
     parser.add_argument(
-                    '--hostname',
-                    required=True,
-                    help='API Hostname provided during the session.')
-    parser.add_argument(
                     '--input_subscription',
                     required=True,
                     help='PubSub Subscription which will be the source of data.')
@@ -189,10 +185,6 @@ def run():
                 | "Parse JSON messages" >> beam.Map(ParsePubSubMessage) 
                 # Adding Processing timestamp
                 | "Add Processing Time" >> beam.ParDo(AddTimestampDoFn())
-                # Masking Sensitive Data
-                | "Masking Sensitive Data" >> beam.ParDo(DLPMaskingDataDoFn(args.hostname))
-                # Check if the transacion is fraudulent
-                | "Call ML model" >> beam.ParDo(CallMLModelDoFn(args.hostname))
         )
 
         """ Part 02: Writing data to BigQuery"""
@@ -205,20 +197,20 @@ def run():
             )
         )
 
-        """ Part 03: Get Best-Selling product per Window and write to PubSub """
-        (
-            data 
-                # Dealing with fraudulent transactions
-                | "Get Product Field" >> beam.ParDo(getProductsDoFn())
-                # Add Windows
-                | "Set fixed window" >> beam.WindowInto(window.FixedWindows(60))
-                # Get Best-selling product
-                | "Get best-selling prduct" >> getBestProduct()
-                # Define output format
-                | "OutputFormat" >> beam.ParDo(OutputFormatDoFn())
-                # Write notification to PubSub Topic
-                | "Send Push Notification" >> beam.io.WriteToPubSub(topic=f"projects/{args.project_id}/topics/{args.output_topic}", with_attributes=False)
-        )
+        # """ Part 03: Get Best-Selling product per Window and write to PubSub """
+        # (
+        #     data 
+        #         # Dealing with fraudulent transactions
+        #         | "Get Product Field" >> beam.ParDo(getProductsDoFn())
+        #         # Add Windows
+        #         | "Set fixed window" >> beam.WindowInto(window.FixedWindows(60))
+        #         # Get Best-selling product
+        #         | "Get best-selling prduct" >> getBestProduct()
+        #         # Define output format
+        #         | "OutputFormat" >> beam.ParDo(OutputFormatDoFn())
+        #         # Write notification to PubSub Topic
+        #         | "Send Push Notification" >> beam.io.WriteToPubSub(topic=f"projects/{args.project_id}/topics/{args.output_topic}", with_attributes=False)
+        # )
 
 if __name__ == '__main__':
     #Add Logs

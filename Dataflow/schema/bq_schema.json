@@ -1,0 +1,19 @@
+{
+    "fields": [
+    {
+      "mode": "NULLABLE",
+      "name": "user_id",
+      "type": "STRING"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "power_panel",
+      "type": "NUMERIC"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "current_time",
+      "type": "TIMESTAMP"
+    }
+    ]
+}
