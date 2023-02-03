@@ -5,14 +5,14 @@ import numpy as np
 import datetime
 
 
-# user_id=os.getenv('USER_ID')
-# topic_id=os.getenv('TOPIC_ID')
-# time_lapse=int(os.getenv('TIME_ID'))
+user_id=os.getenv('USER_ID')
+topic_id=os.getenv('TOPIC_ID')
+time_lapse=int(os.getenv('TIME_ID'))
 
 
-user_id='12345'
-topic_id='topic_test'
-time_lapse=2
+# user_id='12345'
+# topic_id='topic_test'
+# time_lapse=2
 
 
 time_now = datetime.datetime.now() 
@@ -53,7 +53,7 @@ def generatedata():
 
     data["power_panel"] = power_panel
 
-    data["current_time"] = time_now
+    data["current_time"] = time_now.strftime("%d/%m/%Y, %H:%M:%S")
 
     return json.dumps(data)
 

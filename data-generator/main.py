@@ -12,6 +12,7 @@ print("#############################")
 topcontainers = 0
 elapsedtime = 0
 containername=""
+list_ids = []
 
 containers=[]
 
@@ -21,8 +22,11 @@ def getcontainers():
     output = stream.read()
     return int(output)
 
-def genuserid():
-    return uuid.uuid4().hex
+def genuserid(list_ids):
+   #  print('Number of containers: {}'.format(list_ids))
+
+    # Selecting a random id from list_ids as the new container and solar panel
+    return random.choice(list_ids)
 
 def deletecontainer(container_id):
     cmd=f"docker container rm {container_id} -f "
@@ -33,22 +37,27 @@ def deletecontainer(container_id):
 
 
 def createcontainer():
+    global list_ids
     global containername
     global elapsedtime
     global topcontainers
     global containers
-    userid=genuserid()
-    cmd=f"docker run -e TIME_ID={elapsedtime} -e USER_ID={userid} -d {containername}:latest"
+    
+    userid=genuserid(list_ids)
+    list_ids
+    cmd=f"docker run --name {userid} -e TIME_ID={elapsedtime} -e USER_ID={userid} -d {containername}:latest"
     stream = os.popen(cmd)
     output = stream.read().replace("\n","")
-    containers.append(output)
+    if userid not in containers:
+      containers.append(userid)
     print(f"Container Created with id: {output} for user: {userid}")
-    return output
+    return output, userid
 
 def main(argv):
    global containername
    global elapsedtime
    global topcontainers
+   global list_ids
    try:
       opts, args = getopt.getopt(argv,"t:e:i:",["topcontainers=","elapsedtime=","imagename="])
    except getopt.GetoptError:
@@ -71,6 +80,13 @@ def main(argv):
    print(f"Elapsed Time: {elapsedtime}")
    print(f"Container name: {containername}")
 
+   #### MIMOVE CODE ######
+
+   # Creating a list of limited IDs for the solar panels
+   
+   for i in range(topcontainers):
+      list_ids.append(uuid.uuid4().hex)
+
 if __name__ == "__main__":
    main(sys.argv[1:])
 
@@ -82,8 +98,12 @@ while True:
    if numcon<topcontainers:
     create=random.randint(0,topcontainers-numcon)
     print(f"Containers to be created: {create}")
+
     for i in range(0,create):
-        createcontainer()
+        ##### MIMOVE
+        # Ading userid as output to avoid creating a container with the same name as another container that it's running
+        [output, userid] = createcontainer()
+        list_ids.remove(userid)
    else:
     print("No more containers can be created") 
    time.sleep(2)
@@ -92,5 +112,9 @@ while True:
     if prob == 0:
         # 10% probabilidad de eliminar container
         deletecontainer(item)
+
+        #### MIMOVE #####
+        # Adding userid back to the list
+        list_ids.append(item)
     
    time.sleep(1)
