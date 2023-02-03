@@ -2,5 +2,5 @@
 
 docker stop $(docker ps -aq)
 docker rm $(docker ps -aq)
-docker rmi test
+docker rmi solar_gen
 docker build -t solar_gen:latest .

@@ -4,6 +4,7 @@ import time
 import os
 import uuid
 import random
+import datetime
 
 print("#############################")
 print("Starting Generator execution")
@@ -95,10 +96,29 @@ if __name__ == "__main__":
 while True:
    numcon=getcontainers()
    print(f"Currently running containers: {len(containers)}")
+
+   for i in list_ids:
+      data = {}
+
+      time_now = datetime.datetime.now() 
+
+      data["userid"]=i
+
+      data["power_panel"] = 0
+
+      data["current_status"] = 0
+
+      data["current_time"] = time_now.strftime("%d/%m/%Y, %H:%M:%S")
+
+      print(data)
+
+
+
+
    if numcon<topcontainers:
     create=random.randint(0,topcontainers-numcon)
-    print(f"Containers to be created: {create}")
 
+    print(f"Containers to be created: {create}")
     for i in range(0,create):
         ##### MIMOVE
         # Ading userid as output to avoid creating a container with the same name as another container that it's running
