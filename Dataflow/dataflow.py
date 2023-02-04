@@ -34,13 +34,13 @@ def ParsePubSubMessage(message):
     return row
 
 #PTransform Classes
-class getPowerPanel(beam.PTransform):
-    def expand(self, pcoll):
-        power_panel = (pcoll
-            | "Pair keys" >> beam.Map(lambda x: (x,1))
-            # CombinePerKey
-            | "CombinePerKey" >> beam.CombinePerKey(sum))
-        return power_panel
+# class getPowerPanel(beam.PTransform):
+#     def expand(self, pcoll):
+#         power_panel = (pcoll
+#             | "Pair keys" >> beam.Map(lambda x: (x,1))
+#             # CombinePerKey
+#             | "CombinePerKey" >> beam.CombinePerKey(sum))
+#         return power_panel
 
 # DoFn Classes
 
@@ -183,8 +183,6 @@ def run():
                 | "Read From PubSub" >> beam.io.ReadFromPubSub(subscription=f"projects/{args.project_id}/subscriptions/{args.input_subscription}", with_attributes=True)
                 # Parse JSON messages with Map Function
                 | "Parse JSON messages" >> beam.Map(ParsePubSubMessage) 
-                # Adding Processing timestamp
-                | "Add Processing Time" >> beam.ParDo(AddTimestampDoFn())
         )
 
         """ Part 02: Writing data to BigQuery"""
@@ -196,21 +194,6 @@ def run():
                 write_disposition = beam.io.BigQueryDisposition.WRITE_APPEND
             )
         )
-
-        # """ Part 03: Get Best-Selling product per Window and write to PubSub """
-        # (
-        #     data 
-        #         # Dealing with fraudulent transactions
-        #         | "Get Product Field" >> beam.ParDo(getProductsDoFn())
-        #         # Add Windows
-        #         | "Set fixed window" >> beam.WindowInto(window.FixedWindows(60))
-        #         # Get Best-selling product
-        #         | "Get best-selling prduct" >> getBestProduct()
-        #         # Define output format
-        #         | "OutputFormat" >> beam.ParDo(OutputFormatDoFn())
-        #         # Write notification to PubSub Topic
-        #         | "Send Push Notification" >> beam.io.WriteToPubSub(topic=f"projects/{args.project_id}/topics/{args.output_topic}", with_attributes=False)
-        # )
 
 if __name__ == '__main__':
     #Add Logs

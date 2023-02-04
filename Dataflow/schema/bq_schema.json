@@ -8,12 +8,12 @@
     {
       "mode": "NULLABLE",
       "name": "power_panel",
-      "type": "NUMERIC"
+      "type": "STRING"
     },
     {
       "mode": "NULLABLE",
       "name": "current_time",
-      "type": "TIMESTAMP"
+      "type": "STRING"
     }
     ]
 }
