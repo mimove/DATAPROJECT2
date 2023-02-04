@@ -13,7 +13,12 @@
     {
       "mode": "NULLABLE",
       "name": "current_time",
-      "type": "STRING"
+      "type": "TIMESTAMP"
+    }, 
+    {
+      "mode": "NULLABLE",
+      "name": "Processing_Time",
+      "type": "TIMESTAMP"
     }
     ]
 }
