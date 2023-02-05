@@ -1,0 +1,6 @@
+numpy
+protobuf==4.21.12
+uuid
+argparse
+google.auth
+google-cloud-pubsub
