@@ -9,3 +9,5 @@ python3 main.py --topcontainers 3 \
                 --project_id deft-epigram-375817 \
                 --topic_name panels_info
 
+gcloud auth application-default login
+
