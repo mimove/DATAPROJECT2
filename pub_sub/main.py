@@ -195,7 +195,7 @@ while True:
    time.sleep(0.2)
 
    for item in containers:
-      prob=random.randint(0, 10)
+      prob=random.randint(0, 100)
       if prob == 0:
          # 10% probabilidad de eliminar container
          deletecontainer(item)
