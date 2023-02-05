@@ -1,0 +1,8 @@
+numpy
+datetime
+uuid
+logging
+argparse
+google.auth
+faker
+google.cloud

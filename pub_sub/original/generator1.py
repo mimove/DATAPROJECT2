@@ -1,4 +1,4 @@
-## Serverless_Data_Processing_GCP
+# Serverless_Data_Processing_GCP
 # EDEM_Master_Data_Analytics
 
 """ Data Stream Generator:
@@ -11,18 +11,12 @@ import uuid
 import random
 import logging
 import argparse
-import os
-import numpy as np
 import google.auth
 from faker import Faker
 from datetime import datetime
 from google.cloud import pubsub_v1
 
 fake = Faker()
-
-#project_id = "solar-376515"
-#topic_name = "projects/solar-376515/topics/Panel1"
-
 
 #Input arguments
 parser = argparse.ArgumentParser(description=('Aixigo Contracts Dataflow pipeline.'))
@@ -34,7 +28,7 @@ parser.add_argument(
                 '--topic_name',
                 required=True,
                 help='PubSub topic name.')
- 
+
 args, opts = parser.parse_known_args()
 
 class PubSubMessages:
@@ -49,7 +43,7 @@ class PubSubMessages:
         json_str = json.dumps(message)
         topic_path = self.publisher.topic_path(self.project_id, self.topic_name)
         publish_future = self.publisher.publish(topic_path, json_str.encode("utf-8"))
-        logging.info("A New transaction has been registered. Id: %s", message['user_id'])
+        logging.info("A New transaction has been registered. Id: %s", message['Transaction_Id'])
 
     def __exit__(self):
         self.publisher.transport.close()
@@ -58,45 +52,27 @@ class PubSubMessages:
 
 #Generator Code
 def generateMockData():
-    
-    global time_now 
+    product_id = random.choice(['pF8z9GBG', 'XsEOhUOT', '89x5FhyA', 'S3yG1alL', '5pz386iG'])
+    client_name = fake.name()
+    transaction_id = str(uuid.uuid4())
+    transaction_tmp = str(datetime.now())
+    transaction_amount = fake.random_number(digits=5)
+    frequent_client = random.choice([True, False])
+    payment_method = "credit_card"
+    credit_card_number = fake.credit_card_number() if payment_method == "credit_card" else None 
+    email = fake.email() if frequent_client == True else None
 
-    data={}
-
-    user_id = random.choice(['pF8z9GBG', 'XsEOhUOT', '89x5FhyA', 'S3yG1alL', '5pz386iG'])
-
-    h2sec = 3600
-
-    min2sec = 60
-
-    # initial_time = 13*h2sec
-
-    # final_time = 21*h2sec
-
-    time_now = datetime.now() 
-
-    current_minute_seconds = time_now.minute * 60 + time_now.second
-
-    current_time_seconds = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-
-    initial_time = time_now.minute * min2sec
-
-    final_time = (time_now.minute + 8) * min2sec
-
-    mean_time = (initial_time+final_time) / 2
-
-    maxpow = 400
-
-    power_panel = maxpow/(np.cosh((current_minute_seconds-initial_time)*(4/(mean_time-initial_time))-4)**(0.8)) 
-
-    data["user_id"]= user_id
-
-    data["power_panel"] = power_panel
-
-    data["current_time"] = str(time_now)
-
-    return data
-
+    #Return values
+    return {
+        "Name": client_name,
+        "Transaction_Id": transaction_id,
+        "Transaction_Amount": transaction_amount,
+        "Credit_Card_Number": credit_card_number,
+        "Transacion_Timestamp": transaction_tmp,
+        "Is_Registered": frequent_client,
+        "Email": email,
+        "Product_Id": product_id
+    }
 
 def run_generator(project_id, topic_name):
     pubsub_class = PubSubMessages(project_id, topic_name)
