@@ -63,17 +63,11 @@ def run_generator(project_id, topic_name, data):
       pubsub_class.__exit__()
 
 
-
-
-
-def generatedata():
+def generatedata(maxpow):
 
     global time_now 
 
     data={}
-
-
-    maxpow = 400
 
     h2sec = 3600
 
@@ -92,7 +86,7 @@ def generatedata():
     # INTERVAL OF 8 MINUTES FOR TESTING PURPOUSES
     #######################
 
-    time_now = datetime.datetime.now() 
+    # time_now = datetime.datetime.now() 
 
     initial_time = time_now.minute * min2sec
 
@@ -107,27 +101,26 @@ def generatedata():
     current_time_seconds = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
 
-    power_panel = maxpow/(np.cosh((current_minute_seconds-initial_time)*(4/(mean_time-initial_time))-4)**(0.8)) 
+    power_panel = (maxpow/(np.cosh((current_minute_seconds-initial_time)*(4/(mean_time-initial_time))-4)**(0.8)))*random.uniform(0.98, 1)
 
-    data["Panel_id"]=user_id
+    data["Panel_id"]=str(user_id)
 
-    data["power_panel"] = power_panel
+    data["power_panel"] = str(power_panel)
 
-    data["current_status"] = 1
+    data["current_status"] = str(1)
 
-    data["current_time"] = time_now.strftime("%d/%m/%Y, %H:%M:%S")
+    # data["current_time"] = time_now.strftime("%d/%m/%Y, %H:%M:%S")
+    data["current_time"] = str(time_now)
 
     return data
 
 
-def senddata():
-
+def senddata(maxpow):
+    global time_now
     # Coloca el código para enviar los datos a tu sistema de mensajería
     # Utiliza la variable topic id para especificar el topico destino
 
-    time_now = datetime.datetime.now() 
-
-    data = generatedata()
+    data = generatedata(maxpow)
 
     print(data)
 
@@ -135,7 +128,12 @@ def senddata():
 
 
 
+
+time_now = datetime.datetime.now() 
+
+maxpow = 400 * random.uniform(0.9, 1)
+
 while True:
-    senddata()
+    senddata(maxpow)
     logging.getLogger().setLevel(logging.INFO)
     time.sleep(time_lapse)

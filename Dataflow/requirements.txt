@@ -1,4 +1,4 @@
-apache-beam[gcp]==2.41.0
+apache-beam[gcp]
 google-cloud-bigquery
 Faker
 google-cloud-pubsub

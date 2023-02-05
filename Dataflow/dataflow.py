@@ -34,31 +34,31 @@ def ParsePubSubMessage(message):
     return row
 
 # PTransform Classes
-class getPowerPanel(beam.PTransform):
-    def expand(self, pcoll):
-        power_panel = (pcoll
-            | "Pair keys" >> beam.Map(lambda x: (x,1))
-            # CombinePerKey
-            | "CombinePerKey" >> beam.CombinePerKey(sum))
-        return power_panel
+# class getPowerPanel(beam.PTransform):
+#     def expand(self, pcoll):
+#         power_panel = (pcoll
+#             | "Pair keys" >> beam.Map(lambda x: (x,1))
+#             # CombinePerKey
+#             | "CombinePerKey" >> beam.CombinePerKey(sum))
+#         return power_panel
 
 # DoFn Classes
 
 # DoFn 01 : Add Processing Timestamp
-class AddTimestampDoFn(beam.DoFn):
-    """ Add the Data Processing Timestamp."""
-    #Add process function to deal with the data
-    def process(self, element):
-        #Add ProcessingTime field
-        element['Processing_Time'] = str(datetime.now())
-        #return function
-        yield element
+# class AddTimestampDoFn(beam.DoFn):
+#     """ Add the Data Processing Timestamp."""
+#     #Add process function to deal with the data
+#     def process(self, element):
+#         #Add ProcessingTime field
+#         # element['Processing_Time'] = str(datetime.now())
+#         #return function
+#         yield element
 
 # DoFn 04: Dealing with frequent clients
-class getPanelsDoFn(beam.DoFn):
-    def process(self, element):
-        #Get Product_id field from the input element
-        yield element['user_id']
+# class getPanelsDoFn(beam.DoFn):
+#     def process(self, element):
+#         #Get Product_id field from the input element
+#         yield element['user_id']
 
 # # DoFn 05 : Output data formatting
 # class OutputFormatDoFn(beam.DoFn):
@@ -106,7 +106,7 @@ def run():
     """ BigQuery Table Schema """
 
     #Load schema from /schema folder
-    with open(args.bigquery_schema_path) as file:
+    with open('./schema/bq_schema.json') as file:
         input_schema = json.load(file)
 
     schema = bigquery_tools.parse_table_schema_from_json(json.dumps(input_schema))
@@ -124,7 +124,7 @@ def run():
                 | "Read From PubSub" >> beam.io.ReadFromPubSub(subscription=f"projects/{args.project_id}/subscriptions/{args.input_subscription}", with_attributes=True)
                 # Parse JSON messages with Map Function
                 | "Parse JSON messages" >> beam.Map(ParsePubSubMessage) 
-                | "Add Processing Time" >> beam.ParDo(AddTimestampDoFn())
+                # | "Add Processing Time" >> beam.ParDo(AddTimestampDoFn())
         )
 
         """ Part 02: Writing data to BigQuery"""

@@ -2,7 +2,7 @@
     "fields": [
     {
       "mode": "NULLABLE",
-      "name": "Panel_id",
+      "name": "user_id",
       "type": "STRING"
     },
     {
@@ -18,6 +18,11 @@
     {
       "mode": "NULLABLE",
       "name": "current_time",
+      "type": "TIMESTAMP"
+    }, 
+    {
+      "mode": "NULLABLE",
+      "name": "Processing_Time",
       "type": "TIMESTAMP"
     }
     ]
