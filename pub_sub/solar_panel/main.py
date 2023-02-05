@@ -24,7 +24,7 @@ time_lapse=int(os.getenv('TIME_ID'))
 # project_id = 'deft-epigram-375817'
 # topic_name= 'panels_info'
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='./application_default_credentials.json'
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='./run.json'
 os.environ["GOOGLE_CLOUD_PROJECT"] = project_id
 
 
