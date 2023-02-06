@@ -1,0 +1,62 @@
+## JORGE
+
+python3 main.py --topcontainers 3 \
+                --elapsedtime 2 \
+                --image solar_gen \
+                --project_id solar-376515 \
+                --topic_name Panel1
+
+
+python dataflow.py \
+    --project_id solar-376515 \
+    --input_subscription Panel1-sub \
+    --output_bigquery DatasetSolar.Tabla \
+    --runner DataflowRunner \
+    --job_name dataflow-solar \
+    --region europe-west1 \
+    --temp_location gs://solar-376515/tmp \
+    --staging_location gs://solar-376515/stg
+
+
+## MIGUEL
+
+
+python3 main.py --topcontainers 3 \
+                --elapsedtime 2 \
+                --image solar_gen \
+                --project_id deft-epigram-375817 \
+                --topic_name panels_info
+
+
+
+python3 dataflow.py \
+    --project_id deft-epigram-375817 \
+    --input_subscription panels_info-sub \
+    --output_bigquery solarPanelsDP2.Panel_Data \
+    --runner DataflowRunner \
+    --job_name dataflow-solar \
+    --region europe-west1 \
+    --temp_location gs://deft-epigram-375817/tmp \
+    --staging_location gs://deft-epigram-375817/stg
+
+
+## ELYCA 
+
+python3 main.py --topcontainers 3 \
+                --elapsedtime 2 \
+                --image solar_gen \
+                --project_id <project_id> \
+                --topic_name <topic_name>
+
+
+
+python3 dataflow.py \
+    --project_id <project_id> \
+    --input_subscription <topic_name>-sub \
+    --output_bigquery <dataset_bigquery>.Panel_Data \
+    --runner DataflowRunner \
+    --job_name dataflow-solar \
+    --region europe-west1 \
+    --temp_location gs://<bucket(project_id)>/tmp \
+    --staging_location gs://<bucket(project_id)/stg
+

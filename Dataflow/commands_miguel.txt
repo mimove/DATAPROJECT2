@@ -1,0 +1,9 @@
+python3 dataflow.py \
+    --project_id deft-epigram-375817 \
+    --input_subscription panels_info-sub \
+    --output_bigquery solarPanelsDP2.Panel_Data \
+    --runner DataflowRunner \
+    --job_name dataflow-solar \
+    --region europe-west1 \
+    --temp_location gs://deft-epigram-375817/tmp \
+    --staging_location gs://deft-epigram-375817/stg

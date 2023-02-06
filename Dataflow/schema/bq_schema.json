@@ -1,0 +1,24 @@
+{
+    "fields": [
+    {
+      "mode": "NULLABLE",
+      "name": "Panel_id",
+      "type": "STRING"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "power_panel",
+      "type": "STRING"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "current_status",
+      "type": "STRING"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "current_time",
+      "type": "TIMESTAMP"
+    }
+    ]
+}

@@ -165,17 +165,17 @@ while True:
 
       time_now = datetime.datetime.now() 
 
-      data["Panel_id"]=i
+      data["Panel_id"]=str(i)
 
-      data["power_panel"] = 0
+      data["power_panel"] = str(0)
 
-      data["current_status"] = 0
+      data["current_status"] = str(0)
 
-      data["current_time"] = time_now.strftime("%d/%m/%Y, %H:%M:%S")
+      # data["current_time"] = str(time_now)
 
       run_generator(project_id, topic_name, data)
       #it will be generated a transaction each 2 seconds
-      time.sleep(0.1)
+      time.sleep(2)
 
 
    
@@ -192,7 +192,7 @@ while True:
          print("No containers created this time") 
    else:
       print("No more containers can be created")
-   time.sleep(0.2)
+   time.sleep(2)
 
    for item in containers:
       prob=random.randint(0, 10)
@@ -205,7 +205,7 @@ while True:
          list_ids.append(item)
    
          
-   time.sleep(0.1)
+   time.sleep(1)
 
 
 
