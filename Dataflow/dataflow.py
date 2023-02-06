@@ -16,7 +16,7 @@ from apache_beam.io.gcp.bigquery import parse_table_schema_from_json
 from apache_beam.io.gcp import bigquery_tools
 
 #Import Common Libraries
-from datetime import datetime
+from datetime import datetime, timedelta
 import argparse
 import json
 import logging
@@ -45,14 +45,14 @@ def ParsePubSubMessage(message):
 # DoFn Classes
 
 # DoFn 01 : Add Processing Timestamp
-# class AddTimestampDoFn(beam.DoFn):
-#     """ Add the Data Processing Timestamp."""
-#     #Add process function to deal with the data
-#     def process(self, element):
-#         #Add ProcessingTime field
-#         # element['Processing_Time'] = str(datetime.now())
-#         #return function
-#         yield element
+class AddTimestampDoFn(beam.DoFn):
+    """ Add the Data Processing Timestamp."""
+    #Add process function to deal with the data
+    def process(self, element):
+        #Add ProcessingTime field
+        element['current_time'] = str(datetime.now() + timedelta(hours=1))
+        #return function
+        yield element
 
 # DoFn 04: Dealing with frequent clients
 # class getPanelsDoFn(beam.DoFn):
@@ -124,7 +124,7 @@ def run():
                 | "Read From PubSub" >> beam.io.ReadFromPubSub(subscription=f"projects/{args.project_id}/subscriptions/{args.input_subscription}", with_attributes=True)
                 # Parse JSON messages with Map Function
                 | "Parse JSON messages" >> beam.Map(ParsePubSubMessage) 
-                # | "Add Processing Time" >> beam.ParDo(AddTimestampDoFn())
+                | "Add Processing Time" >> beam.ParDo(AddTimestampDoFn())
         )
 
         """ Part 02: Writing data to BigQuery"""

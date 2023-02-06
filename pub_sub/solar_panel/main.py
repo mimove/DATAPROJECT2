@@ -110,7 +110,7 @@ def generatedata(maxpow):
     data["current_status"] = str(1)
 
     # data["current_time"] = time_now.strftime("%d/%m/%Y, %H:%M:%S")
-    data["current_time"] = str(time_now)
+    # data["current_time"] = str(time_now)
 
     return data
 

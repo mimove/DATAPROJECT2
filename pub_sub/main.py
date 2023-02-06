@@ -171,7 +171,7 @@ while True:
 
       data["current_status"] = str(0)
 
-      data["current_time"] = str(time_now)
+      # data["current_time"] = str(time_now)
 
       run_generator(project_id, topic_name, data)
       #it will be generated a transaction each 2 seconds
