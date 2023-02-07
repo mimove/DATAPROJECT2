@@ -1,15 +1,16 @@
 ## JORGE
 
 python3 main.py --topcontainers 3 \
-                --elapsedtime 2 \
-                --image solar_gen \
-                --project_id solar-376515 \
-                --topic_name Panel1
+    --elapsedtime 2 \
+    --image solar_gen \
+    --project_id solar-376515 \
+    --topic_name Panel1
 
 
 python dataflow.py \
     --project_id solar-376515 \
     --input_subscription Panel1-sub \
+    --output_topic Panel1_output \
     --output_bigquery DatasetSolar.Tabla \
     --runner DataflowRunner \
     --job_name dataflow-solar \

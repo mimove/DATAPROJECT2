@@ -167,7 +167,7 @@ while True:
 
       data["Panel_id"]=str(i)
 
-      data["power_panel"] = str(0)
+      data["power_panel"] = float(0)
 
       data["current_status"] = str(0)
 

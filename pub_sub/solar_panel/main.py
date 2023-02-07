@@ -109,7 +109,7 @@ def generatedata(maxpow):
 
     data["current_status"] = str(1)
 
-    # data["current_time"] = time_now.strftime("%d/%m/%Y, %H:%M:%S")
+    data["current_time"] = time_now.strftime("%d/%m/%Y, %H:%M:%S")
     # data["current_time"] = str(time_now)
 
     return data
@@ -129,7 +129,7 @@ def senddata(maxpow):
 
 
 
-time_now = datetime.datetime.now() 
+time_now = (datetime.datetime.now() +  datetime.timedelta(hours=1))
 
 maxpow = 400 * random.uniform(0.9, 1)
 

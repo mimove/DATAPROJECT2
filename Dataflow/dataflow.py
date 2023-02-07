@@ -33,41 +33,44 @@ def ParsePubSubMessage(message):
     #Return function
     return row
 
-# PTransform Classes
-# class getPowerPanel(beam.PTransform):
-#     def expand(self, pcoll):
-#         power_panel = (pcoll
-#             | "Pair keys" >> beam.Map(lambda x: (x,1))
-#             # CombinePerKey
-#             | "CombinePerKey" >> beam.CombinePerKey(sum))
-#         return power_panel
 
 # DoFn Classes
 
 # DoFn 01 : Add Processing Timestamp
-class AddTimestampDoFn(beam.DoFn):
-    """ Add the Data Processing Timestamp."""
-    #Add process function to deal with the data
-    def process(self, element):
-        #Add ProcessingTime field
-        element['current_time'] = str(datetime.now() + timedelta(hours=1))
-        #return function
-        yield element
-
-# DoFn 04: Dealing with frequent clients
-# class getPanelsDoFn(beam.DoFn):
+# class AddTimestampDoFn(beam.DoFn):
+#     """ Add the Data Processing Timestamp."""
+#     #Add process function to deal with the data
 #     def process(self, element):
-#         #Get Product_id field from the input element
-#         yield element['user_id']
+#         #Add ProcessingTime field
+#         element['current_time'] = str(datetime.now() + timedelta(hours=1))
+#         #return function
+#         yield element
 
-# # DoFn 05 : Output data formatting
+#Create DoFn Class to add Window processing time and encode message to publish into PubSub
+class add_processing_time(beam.DoFn):
+    def process(self, element):
+        window_start = str(datetime.now() + timedelta(hours=1))
+        output_data = {'aggPower': element, 'processingTime': window_start}
+        output_json = json.dumps(output_data)
+        yield output_json.encode('utf-8')
+
+def sum_fn(values):
+    return sum(values)
+
+
+#Create DoFn Class to extract temperature from data
+class agg_power(beam.DoFn):
+    def process(self, element):
+        power_panel = element['power_panel']
+        yield power_panel
+
 # class OutputFormatDoFn(beam.DoFn):
 #     """ Set a specific format for the output data."""
 #     #Add process function
 #     def process(self, element):
-#         count, panel_id = element
+#         count, power_panel = element
 #         #Send a notification with the best-selling product_id in each window
-#         output_msg = {"ProcessingTime": str(datetime.now()), "message": f"{panel_id} was the best-selling product."}
+#         output_msg = {"ProcessingTime": str(datetime.now()), "message": f"{power_panel} was the best-selling product."}
 #         #Convert the json to the proper pubsub format
 #         output_json = json.dumps(output_msg)
 #         yield output_json.encode('utf-8')
@@ -86,10 +89,10 @@ def run():
                     '--input_subscription',
                     required=True,
                     help='PubSub Subscription which will be the source of data.')
-    # parser.add_argument(
-    #                 '--output_topic',
-    #                 required=True,
-    #                 help='PubSub Topic which will be the sink for notification data.')
+    parser.add_argument(
+                    '--output_topic',
+                    required=True,
+                    help='PubSub Topic which will be the sink for notification data.')
     parser.add_argument(
                     '--output_bigquery',
                     required=True,
@@ -124,7 +127,7 @@ def run():
                 | "Read From PubSub" >> beam.io.ReadFromPubSub(subscription=f"projects/{args.project_id}/subscriptions/{args.input_subscription}", with_attributes=True)
                 # Parse JSON messages with Map Function
                 | "Parse JSON messages" >> beam.Map(ParsePubSubMessage) 
-                | "Add Processing Time" >> beam.ParDo(AddTimestampDoFn())
+                # | "Add Processing Time" >> beam.ParDo(AddTimestampDoFn())
         )
 
         """ Part 02: Writing data to BigQuery"""
@@ -137,11 +140,15 @@ def run():
             )
         )
         """ Part 03: Get Best-Selling product per Window and write to PubSub """
-        # (
-        #     data 
-        #         # Get Best-selling product
-        #         | "Get best-selling prduct" >> getPowerPanel()
-        # )
+        (data 
+            | "Get power value" >> beam.ParDo(agg_power())
+            | "WindowByMinute" >> beam.WindowInto(window.FixedWindows(20))
+            #| "MeanByWindow" >> beam.CombineGlobally(MeanCombineFn()).without_defaults()
+            | "SumByWindow" >> beam.CombineGlobally(sum_fn).without_defaults()
+            | "Add Window ProcessingTime" >>  beam.ParDo(add_processing_time())
+            | "WriteToPubSub" >> beam.io.WriteToPubSub(topic=f"projects/{args.project_id}/topics/{args.output_topic}", with_attributes=False)
+        )   
+           
 
 if __name__ == '__main__':
     #Add Logs
