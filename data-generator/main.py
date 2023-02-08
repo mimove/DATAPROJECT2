@@ -45,7 +45,6 @@ def createcontainer():
     global containers
     
     userid=genuserid(list_ids)
-    list_ids
     cmd=f"docker run --name {userid} -e TIME_ID={elapsedtime} -e USER_ID={userid} -d {containername}:latest"
     stream = os.popen(cmd)
     output = stream.read().replace("\n","")
