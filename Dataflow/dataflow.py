@@ -50,7 +50,7 @@ def ParsePubSubMessage(message):
 class add_processing_time(beam.DoFn):
     def process(self, element):
         window_start = str(datetime.now() + timedelta(hours=1))
-        output_data = {'aggPower': element, 'processingTime': window_start}
+        output_data = {'Panel_id': element[0], 'mean_power': element[1], 'processingTime': window_start}
         output_json = json.dumps(output_data)
         yield output_json.encode('utf-8')
 
@@ -63,6 +63,12 @@ class agg_power(beam.DoFn):
     def process(self, element):
         power_panel = element['power_panel']
         yield power_panel
+
+#Create DoFn Class to extract temperature from data
+class get_panel(beam.DoFn):
+    def process(self, element):
+        panel_id = element['Panel_id']
+        yield panel_id
 
 
 """ Dataflow Process """
@@ -131,9 +137,12 @@ def run():
         )
         """ Part 03: Get Best-Selling product per Window and write to PubSub """
         (data 
-            | "Get power value" >> beam.ParDo(agg_power())
+            # | "Get power value" >> beam.ParDo(agg_power())
+            | "Map by Panel_id" >> beam.Map(lambda x: (x['Panel_id'], x['power_panel']))
             | "WindowByMinute" >> beam.WindowInto(window.FixedWindows(30))
-            | "MeanByWindow" >> beam.CombineGlobally(MeanCombineFn()).without_defaults()
+            | "GroupByKey" >> beam.GroupByKey()
+            # | "MeanByWindow" >> beam.CombineGlobally(MeanCombineFn()).without_defaults()
+            | "MeanByWindow" >> beam.Map(lambda x: (x[0], sum(x[1])/len(x[1])))
             # | "SumByWindow" >> beam.CombineGlobally(sum_fn).without_defaults()
             | "Add Window ProcessingTime" >>  beam.ParDo(add_processing_time())
             | "WriteToPubSub" >> beam.io.WriteToPubSub(topic=f"projects/{args.project_id}/topics/{args.output_topic}", with_attributes=False)
