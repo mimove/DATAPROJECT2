@@ -64,16 +64,6 @@ class agg_power(beam.DoFn):
         power_panel = element['power_panel']
         yield power_panel
 
-# class OutputFormatDoFn(beam.DoFn):
-#     """ Set a specific format for the output data."""
-#     #Add process function
-#     def process(self, element):
-#         count, power_panel = element
-#         #Send a notification with the best-selling product_id in each window
-#         output_msg = {"ProcessingTime": str(datetime.now()), "message": f"{power_panel} was the best-selling product."}
-#         #Convert the json to the proper pubsub format
-#         output_json = json.dumps(output_msg)
-#         yield output_json.encode('utf-8')
 
 """ Dataflow Process """
 def run():

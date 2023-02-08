@@ -105,12 +105,12 @@ def generatedata(maxpow):
 
     data["Panel_id"]=str(user_id)
 
-    data["power_panel"] = str(power_panel)
+    data["power_panel"] = float(power_panel)
 
     data["current_status"] = str(1)
 
-    data["current_time"] = time_now.strftime("%d/%m/%Y, %H:%M:%S")
-    # data["current_time"] = str(time_now)
+    # data["current_time"] = time_now.strftime("%d/%m/%Y, %H:%M:%S")
+    data["current_time"] = str(time_now)
 
     return data
 
@@ -129,7 +129,7 @@ def senddata(maxpow):
 
 
 
-time_now = (datetime.datetime.now() +  datetime.timedelta(hours=1))
+time_now = (datetime.datetime.now() + datetime.timedelta(hours=1))
 
 maxpow = 400 * random.uniform(0.9, 1)
 
