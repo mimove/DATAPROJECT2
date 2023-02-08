@@ -54,8 +54,8 @@ class add_processing_time(beam.DoFn):
         output_json = json.dumps(output_data)
         yield output_json.encode('utf-8')
 
-def sum_fn(values):
-    return sum(values)
+# def sum_fn(values):
+#     return sum(values)
 
 
 #Create DoFn Class to extract temperature from data
@@ -132,9 +132,9 @@ def run():
         """ Part 03: Get Best-Selling product per Window and write to PubSub """
         (data 
             | "Get power value" >> beam.ParDo(agg_power())
-            | "WindowByMinute" >> beam.WindowInto(window.FixedWindows(20))
-            #| "MeanByWindow" >> beam.CombineGlobally(MeanCombineFn()).without_defaults()
-            | "SumByWindow" >> beam.CombineGlobally(sum_fn).without_defaults()
+            | "WindowByMinute" >> beam.WindowInto(window.FixedWindows(30))
+            | "MeanByWindow" >> beam.CombineGlobally(MeanCombineFn()).without_defaults()
+            # | "SumByWindow" >> beam.CombineGlobally(sum_fn).without_defaults()
             | "Add Window ProcessingTime" >>  beam.ParDo(add_processing_time())
             | "WriteToPubSub" >> beam.io.WriteToPubSub(topic=f"projects/{args.project_id}/topics/{args.output_topic}", with_attributes=False)
         )   
