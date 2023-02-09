@@ -35,6 +35,7 @@ python3 dataflow.py \
     --input_subscription panels_info-sub \
     --output_topic panels_output \
     --output_bigquery solarPanelsDP2.Panel_Data \
+    --output_bigquery_agg solarPanelsDP2.Panel_Data_agg \
     --runner DataflowRunner \
     --job_name dataflow-solar \
     --region europe-west1 \

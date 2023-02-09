@@ -18,11 +18,13 @@ user_id=os.getenv('USER_ID')
 topic_name=os.getenv('TOPIC_ID')
 project_id=os.getenv('PROJECT_ID')
 time_lapse=int(os.getenv('TIME_ID'))
+time_ini = datetime.datetime.strptime(os.getenv('TIME_NOW'), '%Y-%m-%d %H:%M:%S.%f')
 
 # user_id='12345'
 # time_lapse=1
 # project_id = 'deft-epigram-375817'
 # topic_name= 'panels_info'
+# time_ini = datetime.datetime.now()
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='./run.json'
 os.environ["GOOGLE_CLOUD_PROJECT"] = project_id
@@ -64,8 +66,9 @@ def run_generator(project_id, topic_name, data):
 
 
 def generatedata(maxpow):
-
-    global time_now 
+    
+    global time_ini
+    global delta
 
     data={}
 
@@ -88,12 +91,17 @@ def generatedata(maxpow):
 
     # time_now = datetime.datetime.now() 
 
-    initial_time = time_now.minute * min2sec
+    delta_min = 16
 
-    final_time = (time_now.minute + 8) * min2sec
+    initial_time = time_ini.minute * min2sec
+
+    final_time = (time_ini.minute + 8) * min2sec
 
     mean_time = (initial_time+final_time) / 2
     #######################
+
+    
+    time_now = datetime.datetime.now() + datetime.timedelta(hours=delta)
 
 
     current_minute_seconds = time_now.minute * 60 + time_now.second
@@ -101,8 +109,8 @@ def generatedata(maxpow):
     current_time_seconds = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
 
-    power_panel = (maxpow/(np.cosh((current_minute_seconds-initial_time)*(4/(mean_time-initial_time))-4)**(0.8)))*random.uniform(0.98, 1)
-
+    power_panel = maxpow/(np.cosh((current_minute_seconds-initial_time)*(delta_min*0.5/(mean_time-initial_time))-delta_min*0.5)**(0.8*(0.8/(delta_min/10))))
+    
     data["Panel_id"]=str(user_id)
 
     data["power_panel"] = float(power_panel)
@@ -129,9 +137,12 @@ def senddata(maxpow):
 
 
 
-time_now = (datetime.datetime.now() + datetime.timedelta(hours=1))
-
 maxpow = 400 * random.uniform(0.9, 1)
+
+if abs(time_ini.hour - datetime.datetime.now().hour) > 0:
+    delta = 1
+else:
+    delta = 0
 
 while True:
     senddata(maxpow)

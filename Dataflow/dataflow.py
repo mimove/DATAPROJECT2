@@ -22,6 +22,7 @@ import json
 import logging
 import requests
 
+
 """ Helpful functions """
 def ParsePubSubMessage(message):
     #Decode PubSub message in order to deal with
@@ -32,6 +33,8 @@ def ParsePubSubMessage(message):
     logging.info("Receiving message from PubSub:%s", pubsubmessage)
     #Return function
     return row
+
+
 
 
 # DoFn Classes
@@ -47,12 +50,23 @@ def ParsePubSubMessage(message):
 #         yield element
 
 #Create DoFn Class to add Window processing time and encode message to publish into PubSub
+
 class add_processing_time(beam.DoFn):
-    def process(self, element):
-        window_start = str(datetime.now() + timedelta(hours=1))
-        output_data = {'Panel_id': element[0], 'mean_power': element[1], 'processingTime': window_start}
+    def process(self, element, window=beam.DoFn.WindowParam):
+        window_start = window.start.to_utc_datetime() + timedelta(hours=1)
+        window_end = window.end.to_utc_datetime() + timedelta(hours=1)
+        output_data = {'Panel_id': str(element[0]), 'mean_power': str(element[1]), 'window_start': str(datetime.now()), 'window_end': str(datetime.now())}
         output_json = json.dumps(output_data)
         yield output_json.encode('utf-8')
+
+
+class add_processing_time_bigquery(beam.DoFn):
+    def process(self, element, window=beam.DoFn.WindowParam):
+        window_start = window.start.to_utc_datetime() + timedelta(hours=1)
+        window_end = window.end.to_utc_datetime() + timedelta(hours=1)
+        output_data = {'Panel_id': str(element[0]), 'mean_power': element[1], 'window_start': str(window_start), 'window_end': str(window_end)}
+        # output_json = json.dumps(output_data)
+        yield output_data
 
 # def sum_fn(values):
 #     return sum(values)
@@ -94,6 +108,10 @@ def run():
                     required=True,
                     help='Table where data will be stored in BigQuery. Format: <dataset>.<table>.')
     parser.add_argument(
+                    '--output_bigquery_agg',
+                    required=True,
+                    help='Table where agg data will be stored in BigQuery. Format: <dataset>.<table>.')
+    parser.add_argument(
                     '--bigquery_schema_path',
                     required=False,
                     default='./schema/bq_schema.json',
@@ -109,6 +127,12 @@ def run():
         input_schema = json.load(file)
 
     schema = bigquery_tools.parse_table_schema_from_json(json.dumps(input_schema))
+
+    #Load schema from /schema folder
+    with open('./schema/bq_schema_agg.json') as file:
+        input_schema_agg = json.load(file)
+     
+    schema_agg = bigquery_tools.parse_table_schema_from_json(json.dumps(input_schema_agg))
 
     """ Apache Beam Pipeline """
     #Pipeline Options
@@ -135,18 +159,37 @@ def run():
                 write_disposition = beam.io.BigQueryDisposition.WRITE_APPEND
             )
         )
-        """ Part 03: Get Best-Selling product per Window and write to PubSub """
-        (data 
-            # | "Get power value" >> beam.ParDo(agg_power())
-            | "Map by Panel_id" >> beam.Map(lambda x: (x['Panel_id'], x['power_panel']))
-            | "WindowByMinute" >> beam.WindowInto(window.FixedWindows(30))
-            | "GroupByKey" >> beam.GroupByKey()
-            # | "MeanByWindow" >> beam.CombineGlobally(MeanCombineFn()).without_defaults()
-            | "MeanByWindow" >> beam.Map(lambda x: (x[0], sum(x[1])/len(x[1])))
-            # | "SumByWindow" >> beam.CombineGlobally(sum_fn).without_defaults()
-            | "Add Window ProcessingTime" >>  beam.ParDo(add_processing_time())
-            | "WriteToPubSub" >> beam.io.WriteToPubSub(topic=f"projects/{args.project_id}/topics/{args.output_topic}", with_attributes=False)
-        )   
+        """ Part 03: Get mean value of powerpanel per Window and write to PubSub """
+        (
+            data 
+                    | "Map by Panel_id" >> beam.Map(lambda x: (x['Panel_id'], x['power_panel']))
+                    | "WindowByMinute" >> beam.WindowInto(window.FixedWindows(30))
+                    | "GroupByKey" >> beam.GroupByKey()
+                    | "MeanByWindow" >> beam.Map(lambda x: (x[0], sum(x[1])/len(x[1])))
+                    | "Add Window ProcessingTime" >>  beam.ParDo(add_processing_time())
+                    | "WriteToPubSub" >> beam.io.WriteToPubSub(topic=f"projects/{args.project_id}/topics/{args.output_topic}", with_attributes=False)
+        )  
+ 
+
+        """ Part 04: Writing data_agg to BigQuery"""
+        data_agg = (
+            data 
+                    | "BigQuery Map by Panel_id" >> beam.Map(lambda x: (x['Panel_id'], x['power_panel']))
+                    | "BigQuery WindowByMinute" >> beam.WindowInto(window.FixedWindows(30))
+                    | "BigQuery GroupByKey" >> beam.GroupByKey()
+                    | "BigQuery MeanByWindow" >> beam.Map(lambda x: (x[0], sum(x[1])/len(x[1])))
+                    | "BigQuery Window ProcessingTime" >>  beam.ParDo(add_processing_time_bigquery())
+
+        ) 
+
+        (
+            data_agg | "Write to BigQuery agg" >> beam.io.WriteToBigQuery(
+                table = f"{args.project_id}:{args.output_bigquery_agg}",
+                schema = schema_agg,
+                create_disposition = beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
+                write_disposition = beam.io.BigQueryDisposition.WRITE_APPEND
+            )
+        ) 
            
 
 if __name__ == '__main__':

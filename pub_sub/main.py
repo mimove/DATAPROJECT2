@@ -47,6 +47,7 @@ containername=""
 list_ids = []
 project_id=""
 topic_name=""
+time_ini=""
 
 containers=[]
 
@@ -78,9 +79,10 @@ def createcontainer():
     global containers
     global project_id
     global topic_name
+    global time_ini
     
     userid=genuserid(list_ids)
-    cmd=f"docker run --name {userid} -e TIME_ID={elapsedtime} -e USER_ID={userid} -e TOPIC_ID={topic_name} -e PROJECT_ID={project_id} -d {containername}:latest"
+    cmd=f"docker run --name {userid} -e TIME_ID={elapsedtime} -e USER_ID={userid} -e TOPIC_ID={topic_name} -e TIME_NOW='{time_ini}' -e PROJECT_ID={project_id} -d {containername}:latest"
     stream = os.popen(cmd)
     output = stream.read().replace("\n","")
     if userid not in containers:
@@ -155,6 +157,7 @@ if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
    #  run_generator(args.project_id, args.topic_name)
 
+time_ini = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
 
 while True:
    numcon=getcontainers()
