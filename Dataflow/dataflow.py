@@ -65,11 +65,7 @@ class add_processing_time_bigquery(beam.DoFn):
         window_start = window.start.to_utc_datetime() + timedelta(hours=1)
         window_end = window.end.to_utc_datetime() + timedelta(hours=1)
         output_data = {'Panel_id': str(element[0]), 'mean_power': element[1], 'window_start': str(window_start), 'window_end': str(window_end)}
-        # output_json = json.dumps(output_data)
         yield output_data
-
-# def sum_fn(values):
-#     return sum(values)
 
 
 #Create DoFn Class to extract temperature from data
