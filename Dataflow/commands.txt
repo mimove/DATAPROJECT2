@@ -12,6 +12,7 @@ python dataflow.py \
     --input_subscription Panel1-sub \
     --output_topic Panel1_output \
     --output_bigquery DatasetSolar.Tabla \
+    --output_bigquery_agg DatasetSolar.Panel_Data_agg \
     --runner DataflowRunner \
     --job_name dataflow-solar \
     --region europe-west1 \
