@@ -55,7 +55,7 @@ class add_processing_time(beam.DoFn):
     def process(self, element, window=beam.DoFn.WindowParam):
         window_start = window.start.to_utc_datetime() + timedelta(hours=1)
         window_end = window.end.to_utc_datetime() + timedelta(hours=1)
-        output_data = {'Panel_id': str(element[0]), 'mean_power': str(element[1]), 'window_start': str(datetime.now()), 'window_end': str(datetime.now())}
+        output_data = {'power_panel': element, 'window_start': str(datetime.now()), 'window_end': str(datetime.now())}
         output_json = json.dumps(output_data)
         yield output_json.encode('utf-8')
 
@@ -158,10 +158,9 @@ def run():
         """ Part 03: Get mean value of powerpanel per Window and write to PubSub """
         (
             data 
-                    | "Map by Panel_id" >> beam.Map(lambda x: (x['Panel_id'], x['power_panel']))
+                    | "Map by Panel_id" >> beam.Map(lambda x: (x['power_panel']))
                     | "WindowByMinute" >> beam.WindowInto(window.FixedWindows(30))
-                    | "GroupByKey" >> beam.GroupByKey()
-                    | "MeanByWindow" >> beam.Map(lambda x: (x[0], sum(x[1])/len(x[1])))
+                    | "SumByWindow" >> beam.CombineGlobally(sum).without_defaults()
                     | "Add Window ProcessingTime" >>  beam.ParDo(add_processing_time())
                     | "WriteToPubSub" >> beam.io.WriteToPubSub(topic=f"projects/{args.project_id}/topics/{args.output_topic}", with_attributes=False)
         )  
