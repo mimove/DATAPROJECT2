@@ -12,13 +12,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - name: Enable GitHub Actions
+      uses: actions/checkout@v3.3.0
 
-    - name: Configure Google Cloud CLI
-      uses: google-github-actions/setup-google-cloud-cli@master
+    - id: auth
+      uses: google-github-actions/auth@v1
       with:
-        version: latest
+        credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ env.TF_VAR_project_id }}
 
     - name: Configure Terraform
       uses: hashicorp/setup-terraform@v1
