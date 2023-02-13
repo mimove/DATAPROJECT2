@@ -25,15 +25,13 @@ jobs:
       with:
         project_id: ${{ env.TF_VAR_project_id }}
 
-    - name: Configure Terraform
-      uses: hashicorp/setup-terraform@v2.0.3
+    # - name: Configure Terraform
+    #   uses: hashicorp/setup-terraform@v2.0.3
 
-    - name: Initialize Terraform
-      run: |
-        cd Dataflow
-        terraform init
+    # - name: Initialize Terraform
+    #   run: terraform init
 
     - name: Destroying Dataflow job
       run: |
-        cd Dataflow
-        terraform destroy -auto-approve
+        gcloud --quiet  dataflow jobs cancel --region=europe-west1 $(gcloud dataflow jobs list --region=europe-west1 --status=active --filter="name=dataflow-flextemplates-job" --format="value(JOB_ID)")
+      
