@@ -3,13 +3,6 @@ name: Deploy Terraform
 on:
   workflow_dispatch:
 
-name: Deploy Terraform Dataflow
-
-on:
-  push:
-    branches:
-      - master
-
 env:
   TF_VAR_project_id: deft-epigram-375817
   GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
