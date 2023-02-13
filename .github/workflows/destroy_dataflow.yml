@@ -29,8 +29,11 @@ jobs:
       uses: hashicorp/setup-terraform@v2.0.3
 
     - name: Initialize Terraform
-      run: terraform init
+      run: |
+        cd Dataflow
+        terraform init
 
     - name: Destroying Dataflow job
       run: |
+        cd Dataflow
         terraform destroy -auto-approve
