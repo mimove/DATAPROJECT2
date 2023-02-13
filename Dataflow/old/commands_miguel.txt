@@ -1,0 +1,33 @@
+## JORGE
+
+python3 main.py --topcontainers 3 \
+    --elapsedtime 2 \
+    --image solar_gen \
+    --project_id solar-376515 \
+    --topic_name Panel1
+
+
+python dataflow.py \
+    --project_id solar-376515 \
+    --input_subscription Panel1-sub \
+    --output_topic Panel1_output \
+    --output_bigquery DatasetSolar.Tabla \
+    --runner DataflowRunner \
+    --job_name dataflow-solar \
+    --region europe-west1 \
+    --temp_location gs://solar-376515/tmp \
+    --staging_location gs://solar-376515/stg
+
+
+
+## MIGUEL
+
+python3 dataflow.py \
+    --project_id deft-epigram-375817 \
+    --input_subscription panels_info-sub \
+    --output_bigquery solarPanelsDP2.Panel_Data \
+    --runner DataflowRunner \
+    --job_name dataflow-solar \
+    --region europe-west1 \
+    --temp_location gs://deft-epigram-375817/tmp \
+    --staging_location gs://deft-epigram-375817/stg

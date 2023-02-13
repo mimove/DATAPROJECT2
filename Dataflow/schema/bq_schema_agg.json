@@ -2,27 +2,22 @@
     "fields": [
     {
       "mode": "NULLABLE",
-      "name": "user_id",
+      "name": "Panel_id",
       "type": "STRING"
     },
     {
       "mode": "NULLABLE",
-      "name": "power_panel",
-      "type": "STRING"
+      "name": "mean_power",
+      "type": "FLOAT64"
     },
     {
       "mode": "NULLABLE",
-      "name": "current_status",
-      "type": "STRING"
-    },
-    {
-      "mode": "NULLABLE",
-      "name": "current_time",
+      "name": "window_start",
       "type": "TIMESTAMP"
-    }, 
+    },
     {
       "mode": "NULLABLE",
-      "name": "Processing_Time",
+      "name": "window_end",
       "type": "TIMESTAMP"
     }
     ]

@@ -8,12 +8,12 @@
     {
       "mode": "NULLABLE",
       "name": "power_panel",
-      "type": "STRING"
+      "type": "FLOAT64"
     },
     {
       "mode": "NULLABLE",
       "name": "current_status",
-      "type": "STRING"
+      "type": "INT64"
     },
     {
       "mode": "NULLABLE",

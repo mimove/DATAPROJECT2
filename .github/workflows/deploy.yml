@@ -1,0 +1,41 @@
+name: Deploy Terraform
+
+on:
+  workflow_dispatch:
+
+env:
+  GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+  PROJECT_ID: deft-epigram-375817
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Configure Google Cloud CLI
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        service_account_key: ${{ env.GOOGLE_CREDENTIALS }}
+
+    - name: Authenticate and set project
+      run: |
+        gcloud auth activate-service-account --key-file=${GOOGLE_CREDENTIALS}
+        gcloud config set project ${PROJECT_ID}
+
+    - name: Terraform init and plan
+      uses: hashicorp/terraform-github-actions@v1
+      with:
+        terraform_version: 0.18.0
+        working_directory: .
+        tf_actions_command: init
+
+    - name: Terraform apply
+      uses: hashicorp/terraform-github-actions@v1
+      with:
+        terraform_version: 0.18.0
+        working_directory: ./Dataflow
+        tf_actions_command: apply
+        auto_approve: true
