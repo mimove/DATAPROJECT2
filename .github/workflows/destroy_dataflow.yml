@@ -29,9 +29,7 @@ jobs:
       uses: hashicorp/setup-terraform@v2.0.3
 
 
-    - name: Deploy Terraform
+    - name: Destroy Terraform
       run: |
         cd Dataflow
-        terraform init
-        terraform plan -out=plan.tfplan
-        terraform apply plan.tfplan
+        terraform destroy
