@@ -10,10 +10,6 @@ resource "google_dataflow_flex_template_job" "big_data_job" {
     project = "deft-epigram-375817"
     region = "europe-west1"
 
-# resource "google_dataflow_job" "big_data_job" {
-#   name              = "dataflow-job"
-#   template_gcs_path = "gs://edem-serverless-bucket/data-project2-flowtemplate.json"
-#   temp_gcs_location = "gs://deft-epigram-375817/tmp"
 
   parameters = {
     input_subscription = "panels_info-sub"

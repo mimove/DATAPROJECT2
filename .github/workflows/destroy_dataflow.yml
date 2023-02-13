@@ -28,8 +28,9 @@ jobs:
     - name: Configure Terraform
       uses: hashicorp/setup-terraform@v2.0.3
 
-    - name: Destroy Terraform job
+    - name: Destroy Terraform Infrastructure
       run: |
         cd Dataflow
-        terraform init
+        terraform workspace select dataflow
         terraform destroy -auto-approve
+        terraform workspace delete dataflow

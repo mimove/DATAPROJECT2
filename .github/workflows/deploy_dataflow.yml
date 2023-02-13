@@ -29,9 +29,15 @@ jobs:
       uses: hashicorp/setup-terraform@v2.0.3
 
 
+    - name: Create Terraform Workspace
+      run: |
+        cd Dataflow
+        terraform workspace new dataflow 
+
     - name: Deploy Terraform
       run: |
         cd Dataflow
         terraform init
+        terraform workspace select dataflow
         terraform plan 
-        terraform apply -auto-approve 
+        terraform apply -auto-approve
