@@ -28,8 +28,10 @@ jobs:
     - name: Configure Terraform
       uses: hashicorp/setup-terraform@v2.0.3
 
-    - name: Destroy Terraform Infrastructure
+    - name: Initialize Terraform
+      run: terraform init
+
+    - name: Destroying Dataflow job
       run: |
-        gcloud dataflow jobs delete $(terraform output job_name)
-        terraform init
+        gcloud beta dataflow jobs cancel $(terraform output job_name)
         terraform destroy -auto-approve
