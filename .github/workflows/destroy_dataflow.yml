@@ -33,5 +33,5 @@ jobs:
 
     - name: Destroying Dataflow job
       run: |
-        gcloud beta dataflow jobs cancel $(terraform output job_name)
+        gcloud --quiet beta dataflow jobs cancel --region=europe-west1 $(terraform output job_name)
         terraform destroy -auto-approve

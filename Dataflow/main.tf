@@ -20,3 +20,11 @@ resource "google_dataflow_flex_template_job" "big_data_job" {
     staging_location   = "gs://deft-epigram-375817/stg"
   }
 }
+
+output "job_name" {
+  value = google_dataflow_flex_template_job.big_data_job.name
+}
+
+output "region_name" {
+  value = google_dataflow_flex_template_job.big_data_job.region
+}
