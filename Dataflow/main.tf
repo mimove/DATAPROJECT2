@@ -1,22 +1,20 @@
 provider "google" {
-  version = "3.28.0"
+  version = "3.53.0"
   region  = "europe-west1"
 }
 
-module "dataflow_job" {
-  source = "terraform-google-modules/dataflow/google"
+resource "google_dataflow_flex_template_job" "big_data_job" {
+    provider                = google-beta
+    name                    = "dataflow-flextemplates-job"
+    container_spec_gcs_path = "gs://edem-serverless-bucket/data-project2-flowtemplate.json"
+    project = "deft-epigram-375817"
+    region = "europe-west1"
 
-  project_id = "deft-epigram-375817"
-  job_name   = "dataflow-solar"
-  region     = "europe-west1"
+# resource "google_dataflow_job" "big_data_job" {
+#   name              = "dataflow-job"
+#   template_gcs_path = "gs://edem-serverless-bucket/data-project2-flowtemplate.json"
+#   temp_gcs_location = "gs://deft-epigram-375817/tmp"
 
-  # Define the Flex template properties
-  template_bucket = "edem-serverless-bucket"
-  template_object = "data-project2-flowtemplate.json"
-  sdk_language = "PYTHON"
-  image = "gcr.io/deft-epigram-375817/dataflow/data-project2:latest"
-
-  # Define the job parameters
   parameters = {
     input_subscription = "panels_info-sub"
     output_topic       = "panels_output"
