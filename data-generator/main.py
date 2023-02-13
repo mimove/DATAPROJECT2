@@ -14,6 +14,8 @@ topcontainers = 0
 elapsedtime = 0
 containername=""
 list_ids = []
+time_ini = ""
+
 
 containers=[]
 
@@ -43,9 +45,10 @@ def createcontainer():
     global elapsedtime
     global topcontainers
     global containers
-    
+    global time_ini
+
     userid=genuserid(list_ids)
-    cmd=f"docker run --name {userid} -e TIME_ID={elapsedtime} -e USER_ID={userid} -d {containername}:latest"
+    cmd=f"docker run --name {userid} -e TIME_ID={elapsedtime} -e USER_ID={userid} -e TIME_NOW='{time_ini}' -d {containername}:latest"
     stream = os.popen(cmd)
     output = stream.read().replace("\n","")
     if userid not in containers:
@@ -90,7 +93,7 @@ def main(argv):
 if __name__ == "__main__":
    main(sys.argv[1:])
 
-
+time_ini = (datetime.datetime.now()-timedelta(minutes=0)).strftime('%Y-%m-%d %H:%M:%S.%f')
 
 while True:
    numcon=getcontainers()
@@ -99,7 +102,7 @@ while True:
    for i in list_ids:
       data = {}
 
-      time_now = datetime.datetime.now() 
+      time_now = datetime.datetime.now()-timedelta(minutes=0) 
 
       data["userid"]=i
 

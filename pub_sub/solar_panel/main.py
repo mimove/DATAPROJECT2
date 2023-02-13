@@ -3,6 +3,7 @@ import os
 import time
 import numpy as np
 import datetime
+from datetime import timedelta
 
 #Import libraries
 import uuid
@@ -66,9 +67,8 @@ def run_generator(project_id, topic_name, data):
 
 
 def generatedata(maxpow):
-    
+
     global time_ini
-    global delta
 
     data={}
 
@@ -77,40 +77,38 @@ def generatedata(maxpow):
     min2sec = 60
 
 
-    #######################
-    # INTERVAL OF 8 HOURS
+    ######################
+    #INTERVAL OF N HOURS
 
-    # initial_time = 13*h2sec
-
-    # final_time = 21*h2sec
-    #######################
-
-    #######################
-    # INTERVAL OF 8 MINUTES FOR TESTING PURPOUSES
-    #######################
-
-    # time_now = datetime.datetime.now() 
-
-    delta_min = 16
-
-    initial_time = time_ini.minute * min2sec
-
-    final_time = (time_ini.minute + 8) * min2sec
-
-    mean_time = (initial_time+final_time) / 2
-    #######################
-
+    delta_hour = 4
     
-    time_now = datetime.datetime.now() + datetime.timedelta(hours=delta)
+    #######################
+    # INTERVAL OF N MINUTES FOR TESTING PURPOUSES
+    #######################
+
+    delta_min = 0
+
+    time_ini = time_ini - timedelta(hours=1)
+
+    initial_time = time_ini.hour * h2sec + time_ini.minute * min2sec
+
+    final_time = (time_ini.hour + delta_hour) * h2sec + (time_ini.minute + delta_min) * min2sec
+
+    mean_time = (initial_time + final_time) / 2
+    #######################
+
+    time_now= datetime.datetime.now()-timedelta(minutes=0)
 
 
-    current_minute_seconds = time_now.minute * 60 + time_now.second
+   #  current_minute_seconds = time_now.minute * 60 + time_now.second
 
-    current_time_seconds = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+    current_time_seconds = time_now.hour * h2sec + time_now.minute * min2sec + time_now.second
 
 
-    power_panel = maxpow/(np.cosh((current_minute_seconds-initial_time)*(delta_min*0.5/(mean_time-initial_time))-delta_min*0.5)**(0.8*(0.8/(delta_min/10))))
-    
+    # power_panel = maxpow/(np.cosh((current_minute_seconds-initial_time)*(4/(mean_time-initial_time))-4)**(0.8))*random.uniform(0.98, 1)
+
+    power_panel = maxpow/(np.cosh((current_time_seconds-initial_time)*((delta_hour)*0.5/(mean_time-initial_time))-(delta_hour)*0.5)**((delta_hour)/2))
+
     data["Panel_id"]=str(user_id)
 
     data["power_panel"] = float(power_panel)
@@ -118,7 +116,7 @@ def generatedata(maxpow):
     data["current_status"] = str(1)
 
     # data["current_time"] = time_now.strftime("%d/%m/%Y, %H:%M:%S")
-    data["current_time"] = str(time_now)
+    data["current_time"] = str(time_now+timedelta(hours=1))
 
     return data
 
@@ -139,10 +137,6 @@ def senddata(maxpow):
 
 maxpow = 400 * random.uniform(0.9, 1)
 
-if abs(time_ini.hour - datetime.datetime.now().hour) > 0:
-    delta = 1
-else:
-    delta = 0
 
 while True:
     senddata(maxpow)
