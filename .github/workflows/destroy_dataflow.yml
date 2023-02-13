@@ -31,4 +31,5 @@ jobs:
     - name: Destroy Terraform Infrastructure
       run: |
         gcloud dataflow jobs delete $(terraform output job_name)
+        terraform init
         terraform destroy -auto-approve
