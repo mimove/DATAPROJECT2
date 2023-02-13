@@ -8,7 +8,7 @@ env:
   GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
 jobs:
-  Deploy Dataflow:
+  DestroyDataflow:
     runs-on: ubuntu-latest
 
     steps:
