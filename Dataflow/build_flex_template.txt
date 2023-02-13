@@ -1,0 +1,5 @@
+gcloud builds submit --tag 'gcr.io/deft-epigram-375817/dataflow/data-project2:latest' .
+
+gcloud dataflow flex-template build "gs://edem-serverless-bucket/data-project2-flowtemplate.json" \
+  --image 'gcr.io/deft-epigram-375817/dataflow/data-project2:latest' \
+  --sdk-language "PYTHON" 

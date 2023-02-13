@@ -23,8 +23,8 @@ python dataflow.py \
 ## MIGUEL
 
 
-python3 main.py --topcontainers 3 \
-                --elapsedtime 2 \
+python3 main.py --topcontainers 15 \
+                --elapsedtime 10 \
                 --image solar_gen \
                 --project_id deft-epigram-375817 \
                 --topic_name panels_info

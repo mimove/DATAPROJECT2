@@ -2,6 +2,7 @@ import docker
 import sys, getopt
 import os
 import datetime
+from datetime import timedelta
 
 #Import libraries
 import json
@@ -157,7 +158,7 @@ if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
    #  run_generator(args.project_id, args.topic_name)
 
-time_ini = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+time_ini = (datetime.datetime.now()-timedelta(minutes=0)).strftime('%Y-%m-%d %H:%M:%S.%f')
 
 while True:
    numcon=getcontainers()
@@ -166,7 +167,7 @@ while True:
    for i in list_ids:
       data = {}
 
-      time_now = datetime.datetime.now() 
+      time_now = datetime.datetime.now()-timedelta(minutes=0)
 
       data["Panel_id"]=str(i)
 

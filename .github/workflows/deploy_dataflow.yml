@@ -1,0 +1,33 @@
+name: Deploy Terraform
+
+on:
+  workflow_dispatch:
+
+env:
+  TF_VAR_project_id: deft-epigram-375817
+  GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Configure Google Cloud CLI
+      uses: google-github-actions/setup-google-cloud-cli@master
+      with:
+        version: latest
+
+    - name: Configure Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 0.15.x
+
+    - name: Deploy Terraform
+      run: |
+        cd Dataflow
+        terraform init
+        terraform plan -out=plan.tfplan
+        terraform apply plan.tfplan
