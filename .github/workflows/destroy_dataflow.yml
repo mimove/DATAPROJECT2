@@ -30,6 +30,6 @@ jobs:
 
     - name: Destroy Terraform job
       run: |
+        cd Dataflow
         terraform init
-        terraform workspace select dataflow
         terraform destroy -auto-approve
