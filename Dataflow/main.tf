@@ -19,6 +19,8 @@ resource "google_dataflow_flex_template_job" "big_data_job" {
     temp_location      = "gs://deft-epigram-375817/tmp"
     staging_location   = "gs://deft-epigram-375817/stg"
   }
+
+  on_delete = "cancel"
 }
 
 output "job_name" {
@@ -27,4 +29,8 @@ output "job_name" {
 
 output "region_name" {
   value = google_dataflow_flex_template_job.big_data_job.region
+}
+
+output "project_id" {
+  value = google_dataflow_flex_template_job.big_data_job.project
 }
