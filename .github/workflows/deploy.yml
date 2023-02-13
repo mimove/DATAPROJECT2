@@ -3,9 +3,16 @@ name: Deploy Terraform
 on:
   workflow_dispatch:
 
+name: Deploy Terraform Dataflow
+
+on:
+  push:
+    branches:
+      - master
+
 env:
-  GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-  PROJECT_ID: deft-epigram-375817
+  TF_VAR_project_id: deft-epigram-375817
+  GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
 jobs:
   deploy:
@@ -16,26 +23,18 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Configure Google Cloud CLI
-      uses: google-github-actions/setup-gcloud@master
+      uses: google-github-actions/setup-google-cloud-cli@master
       with:
-        service_account_key: ${{ env.GOOGLE_CREDENTIALS }}
+        version: latest
 
-    - name: Authenticate and set project
+    - name: Configure Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 0.15.x
+
+    - name: Deploy Terraform
       run: |
-        gcloud auth activate-service-account --key-file=${GOOGLE_CREDENTIALS}
-        gcloud config set project ${PROJECT_ID}
-
-    - name: Terraform init and plan
-      uses: hashicorp/terraform-github-actions@v1
-      with:
-        terraform_version: 0.18.0
-        working_directory: .
-        tf_actions_command: init
-
-    - name: Terraform apply
-      uses: hashicorp/terraform-github-actions@v1
-      with:
-        terraform_version: 0.18.0
-        working_directory: ./Dataflow
-        tf_actions_command: apply
-        auto_approve: true
+        cd Dataflow
+        terraform init
+        terraform plan -out=plan.tfplan
+        terraform apply plan.tfplan
