@@ -28,10 +28,10 @@ jobs:
     - name: Configure Terraform
       uses: hashicorp/setup-terraform@v2.0.3
 
+    - name: Terraform Init
+      working-directory: ./Dataflow
+      run: terraform init
 
     - name: Destroy Terraform
-      run: |
-        cd Dataflow
-        terraform init
-        terraform plan -out=plan.tfplan
-        terraform destroy
+      working-directory: ./Dataflow
+      run: terraform destroy -lock=false -auto-approve
