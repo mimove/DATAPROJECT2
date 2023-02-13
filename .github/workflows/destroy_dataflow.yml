@@ -33,4 +33,5 @@ jobs:
       run: |
         cd Dataflow
         terraform init
-        terraform destroy plan.tfplan
+        terraform plan -out=plan.tfplan
+        terraform destroy
