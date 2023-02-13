@@ -26,9 +26,8 @@ jobs:
         project_id: ${{ env.TF_VAR_project_id }}
 
     - name: Configure Terraform
-      uses: hashicorp/setup-terraform@v1
-      with:
-        terraform_version: 0.15.x
+      uses: hashicorp/setup-terraform@v2.0.3
+
 
     - name: Deploy Terraform
       run: |
