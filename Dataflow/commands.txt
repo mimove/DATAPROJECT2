@@ -23,8 +23,8 @@ python dataflow.py \
 ## MIGUEL
 
 
-python3 main.py --topcontainers 15 \
-                --elapsedtime 10 \
+python3 main.py --topcontainers 20 \
+                --elapsedtime 5 \
                 --image solar_gen \
                 --project_id deft-epigram-375817 \
                 --topic_name panels_info
@@ -38,7 +38,7 @@ python3 dataflow.py \
     --output_bigquery solarPanelsDP2.Panel_Data \
     --output_bigquery_agg solarPanelsDP2.Panel_Data_agg \
     --runner DataflowRunner \
-    --job_name dataflow-solar \
+    --job_name dataflow-flextemplates-job \
     --region europe-west1 \
     --temp_location gs://deft-epigram-375817/tmp \
     --staging_location gs://deft-epigram-375817/stg

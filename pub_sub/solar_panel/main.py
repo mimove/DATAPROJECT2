@@ -80,15 +80,13 @@ def generatedata(maxpow):
     ######################
     #INTERVAL OF N HOURS
 
-    delta_hour = 4
+    delta_hour = 6
     
     #######################
     # INTERVAL OF N MINUTES FOR TESTING PURPOUSES
     #######################
 
     delta_min = 0
-
-    time_ini = time_ini - timedelta(hours=1)
 
     initial_time = time_ini.hour * h2sec + time_ini.minute * min2sec
 
@@ -97,7 +95,7 @@ def generatedata(maxpow):
     mean_time = (initial_time + final_time) / 2
     #######################
 
-    time_now= datetime.datetime.now()-timedelta(minutes=0)
+    time_now= datetime.datetime.now()-timedelta(minutes=0)+timedelta(hours=1)
 
 
    #  current_minute_seconds = time_now.minute * 60 + time_now.second
@@ -106,8 +104,10 @@ def generatedata(maxpow):
 
 
     # power_panel = maxpow/(np.cosh((current_minute_seconds-initial_time)*(4/(mean_time-initial_time))-4)**(0.8))*random.uniform(0.98, 1)
+    # power_panel = maxpow/(np.cosh((current_time_seconds-initial_time)*((delta_hour)*0.5/(mean_time-initial_time))-(delta_hour)*0.5)**((delta_hour)/2))
+    # power_panel = maxpow/(np.cosh((current_time_seconds-initial_time)*((delta_hour)*0.5/(mean_time-initial_time))-(delta_hour)*0.5)**(30))
 
-    power_panel = maxpow/(np.cosh((current_time_seconds-initial_time)*((delta_hour)*0.5/(mean_time-initial_time))-(delta_hour)*0.5)**((delta_hour)/2))
+    power_panel = maxpow/(np.cosh((current_time_seconds-initial_time)*((delta_hour)*0.5/(mean_time-initial_time))-(delta_hour)*0.5)**(1))
 
     data["Panel_id"]=str(user_id)
 
@@ -115,18 +115,24 @@ def generatedata(maxpow):
 
     data["current_status"] = str(1)
 
+    print(power_panel)
+
     # data["current_time"] = time_now.strftime("%d/%m/%Y, %H:%M:%S")
-    data["current_time"] = str(time_now+timedelta(hours=1))
+    data["current_time"] = str(time_now)
 
     return data
 
 
 def senddata(maxpow):
     global time_now
+    global time_ini
+
     # Coloca el código para enviar los datos a tu sistema de mensajería
     # Utiliza la variable topic id para especificar el topico destino
 
     data = generatedata(maxpow)
+
+    # print(time_ini)
 
     print(data)
 
@@ -135,7 +141,7 @@ def senddata(maxpow):
 
 
 
-maxpow = 400 * random.uniform(0.9, 1)
+maxpow = 400 * random.uniform(0.8, 1.2)
 
 
 while True:

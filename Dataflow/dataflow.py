@@ -45,7 +45,7 @@ def ParsePubSubMessage(message):
 #     #Add process function to deal with the data
 #     def process(self, element):
 #         #Add ProcessingTime field
-#         element['current_time'] = str(datetime.now() + timedelta(hours=1))
+#         element['current_time'] = str(datetime.now())
 #         #return function
 #         yield element
 
@@ -53,8 +53,8 @@ def ParsePubSubMessage(message):
 
 class add_processing_time(beam.DoFn):
     def process(self, element, window=beam.DoFn.WindowParam):
-        window_start = window.start.to_utc_datetime() + timedelta(hours=1)
-        window_end = window.end.to_utc_datetime() + timedelta(hours=1)
+        window_start = window.start.to_utc_datetime() 
+        window_end = window.end.to_utc_datetime()
         output_data = {'power_panel': element, 'window_start': str(datetime.now()), 'window_end': str(datetime.now())}
         output_json = json.dumps(output_data)
         yield output_json.encode('utf-8')
@@ -62,8 +62,8 @@ class add_processing_time(beam.DoFn):
 
 class add_processing_time_bigquery(beam.DoFn):
     def process(self, element, window=beam.DoFn.WindowParam):
-        window_start = window.start.to_utc_datetime() + timedelta(hours=1)
-        window_end = window.end.to_utc_datetime() + timedelta(hours=1)
+        window_start = window.start.to_utc_datetime()
+        window_end = window.end.to_utc_datetime()
         output_data = {'Panel_id': str(element[0]), 'mean_power': element[1], 'window_start': str(window_start), 'window_end': str(window_end)}
         yield output_data
 
