@@ -36,7 +36,7 @@ def send_email_alert(event, context):
         gmail_user = "pruebaemailsolar@gmail.com"
         gmail_password = os.environ["GMAIL_PASSWORD"]
         subject = "High value alert"
-        body = "Su instalación fotovoltaica ha comenzado a producir energía"
+        body = "Your Photovoltaic Plant has started producing energy"
 
         email_text = "From: {}\nTo: {}\nSubject: {}\n\n{}".format(gmail_user, to, subject, body)
 
@@ -54,7 +54,7 @@ def send_email_alert(event, context):
 
     
     #Condition to send Finshing Production Email
-    if 5 <= power <= 10:
+    if 3 <= power <= 100:
         if first_time_bottom and not first_time_top:
 
             #First_time_bottom becomes False to not execute condition again
@@ -68,7 +68,7 @@ def send_email_alert(event, context):
             gmail_user = "pruebaemailsolar@gmail.com"
             gmail_password = os.environ["GMAIL_PASSWORD"]
             subject = "Low value alert"
-            body = "Su instalación fotovoltaica ha dejado de producir energía"
+            body = "Your Photovoltaic Plant has stopped producing energy"
 
             email_text = "From: {}\nTo: {}\nSubject: {}\n\n{}".format(gmail_user, to, subject, body)
 
