@@ -32,7 +32,7 @@ def send_email_alert(event, context):
         print(f"Production has started. Last 30 secs power is: {power}")
 
         #Email credentials and text
-        to = "martinezca.jorge@gmail.com"
+        to = "pruebaemailsolar@gmail.com"
         gmail_user = "pruebaemailsolar@gmail.com"
         gmail_password = os.environ["GMAIL_PASSWORD"]
         subject = "High value alert"
