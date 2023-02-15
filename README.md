@@ -53,7 +53,7 @@ Donde $\mathrm{P_{max}}$ es la potencia máxima del panel, $t_{ini}$ la hora a l
 La siguiente figura muestra como se vería la curva para una placa solar que produjera durante una hora, con un máximo de potencia de 400W:
 
 <p align="center">
-<img src=".images/sech.png" width=4 00px>
+<img src=".images/sech.png" width=400px>
 </p>
 
 
@@ -62,7 +62,7 @@ Con esta ecuación, el generador de datos lo que simula es una serie de contened
 
 Para ejecutar el codigo del generador correctamente hay que realizar los siguientes pasos:
 
-1. Construir la imagen Docker de solar_gen. Para ello hay un script en la carpeta [solar_panel](./data-generator/solar_panel/) que se llama init.sh
+1. Construir la imagen Docker de solar_gen. Para ello hay un script en la carpeta [solar_panel](./pub_sub/solar_panel/) que se llama init.sh
 
 2. Una vez construida la imagen, se puede ejecutar el siguiente código Python para enviar la info a Pub/Sub
 
@@ -116,7 +116,7 @@ Dentro de la carpeta de dataflow, se encuentra el código Python escrito utiliza
 3. Mediante el uso de una ventana, se obtiene la potencia total instantánea generada por los paneles, y se escribe en un tópico de Pub/Sub para utilizar luego en las Cloud Functions como disparador de una aviso.
 
 
-4. Se calcula otra ventana para sacar la media en franjas de 30 segundos de la potencia media generada por los paneles, y se escribe el resultado de la PCollection en otra tabla de BigQuery
+4. Se calcula otra ventana para sacar en franjas de 30 segundos la potencia media generada por los paneles, y se escribe el resultado de la PCollection en otra tabla de BigQuery
 
 
 Para ejecutar este código se puede hacer de 2 formas:
