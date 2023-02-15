@@ -1,13 +1,9 @@
-python3 main.py -t 3 -e 2 -i solar_gen -p deft-epigram-375817 -q panels_info
-
-
-
-    
 python3 main.py --topcontainers 3 \
                 --elapsedtime 2 \
                 --image solar_gen \
                 --project_id deft-epigram-375817 \
                 --topic_name panels_info
 
-gcloud auth application-default login
 
+# Comando para cargar credenciales de GCP
+gcloud auth application-default login

@@ -1,5 +1,5 @@
 """ Serverless Data Processing with Dataflow
-    Master Data Analytics EDEM
+    DATAPROJECT 2 
     Academic Year 2022-2023"""
 
 """ Import libraries """
@@ -36,19 +36,6 @@ def ParsePubSubMessage(message):
 
 
 
-
-# DoFn Classes
-
-# DoFn 01 : Add Processing Timestamp
-# class AddTimestampDoFn(beam.DoFn):
-#     """ Add the Data Processing Timestamp."""
-#     #Add process function to deal with the data
-#     def process(self, element):
-#         #Add ProcessingTime field
-#         element['current_time'] = str(datetime.now())
-#         #return function
-#         yield element
-
 #Create DoFn Class to add Window processing time and encode message to publish into PubSub
 
 class add_processing_time(beam.DoFn):
@@ -68,13 +55,13 @@ class add_processing_time_bigquery(beam.DoFn):
         yield output_data
 
 
-#Create DoFn Class to extract temperature from data
+#Create DoFn Class to extract power_panel from data
 class agg_power(beam.DoFn):
     def process(self, element):
         power_panel = element['power_panel']
         yield power_panel
 
-#Create DoFn Class to extract temperature from data
+#Create DoFn Class to extract Panel_id from data
 class get_panel(beam.DoFn):
     def process(self, element):
         panel_id = element['Panel_id']

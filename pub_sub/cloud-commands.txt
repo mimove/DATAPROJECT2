@@ -1,7 +1,7 @@
 ## Gcloud command to login into the virtual machine
 gcloud compute ssh --zone "us-central1-a" "dataproject2-pub-sub"  --project "deft-epigram-375817"
 
-## Gcloud command to copy folders/files
+## Gcloud command to copy folders/files
 gcloud compute scp --recurse --zone "us-central1-a"  pub_sub dataproject2-pub-sub:~/ --project "deft-epigram-375817"
 
 

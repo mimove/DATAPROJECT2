@@ -42,6 +42,8 @@ print("#############################")
 print("Starting Generator execution")
 print("#############################")
 
+# Env. variables initialization
+
 topcontainers = 0
 elapsedtime = 0
 containername=""
@@ -52,18 +54,20 @@ time_ini=""
 
 containers=[]
 
+# Function to get the actual number of solar_panels active
 def getcontainers():
     cmd=f"docker ps | grep -c {containername}"
     stream = os.popen(cmd)
     output = stream.read()
     return int(output)
 
-def genuserid(list_ids):
-   #  print('Number of containers: {}'.format(list_ids))
 
-    # Selecting a random id from list_ids as the new container and solar panel
+# Selecting a random id from list_ids as the new container and solar panel
+def genuserid(list_ids):
     return random.choice(list_ids)
 
+
+# Function to delete the container
 def deletecontainer(container_id):
     cmd=f"docker container rm {container_id} -f "
     stream = os.popen(cmd)
@@ -83,6 +87,8 @@ def createcontainer():
     global time_ini
     
     userid=genuserid(list_ids)
+
+    # The following command creates a container for a solar panel, and it passes info about TIME, USER, TOPIC and docker network through env. variables
     cmd=f"docker run --name {userid} -e TIME_ID={elapsedtime} -e USER_ID={userid} -e TOPIC_ID={topic_name} -e TIME_NOW='{time_ini}' -e PROJECT_ID={project_id} -d {containername}:latest"
     stream = os.popen(cmd)
     output = stream.read().replace("\n","")
@@ -131,10 +137,8 @@ def main(argv):
    print(f"Project name: {project_id}")
    print(f"Topic name: {topic_name}")
 
-   #### MIMOVE CODE ######
 
    # Creating a list of limited IDs for the solar panels
-   
    for i in range(topcontainers):
       list_ids.append(uuid.uuid4().hex)
 
@@ -144,6 +148,7 @@ def run_generator(project_id, topic_name, data):
    #Publish message into the queue 
    try:
       message: dict = data
+      # Sending data to PubSub. 
       pubsub_class.publishMessages(message)
       time.sleep(1)
 
@@ -156,7 +161,7 @@ def run_generator(project_id, topic_name, data):
 if __name__ == "__main__":
     main(sys.argv[1:])
     logging.getLogger().setLevel(logging.INFO)
-   #  run_generator(args.project_id, args.topic_name)
+
 
 time_ini = (datetime.datetime.now()-timedelta(minutes=0)).strftime('%Y-%m-%d %H:%M:%S.%f')
 
@@ -169,6 +174,8 @@ while True:
 
       time_now = datetime.datetime.now()-timedelta(minutes=0)
 
+      #Each solar panel has to send status=0 once it's offline, along with its ID and timestamp
+
       data["Panel_id"]=str(i)
 
       data["power_panel"] = float(0)
@@ -178,7 +185,6 @@ while True:
       data["current_time"] = str(time_now)
 
       run_generator(project_id, topic_name, data)
-      #it will be generated a transaction each 2 seconds
       time.sleep(2)
 
 
@@ -188,7 +194,6 @@ while True:
 
       print(f"Containers to be created: {create}")
       for i in range(0,create):
-         ##### MIMOVE
          # Ading userid as output to avoid creating a container with the same name as another container that it's running
          [output, userid] = createcontainer()
          list_ids.remove(userid)
@@ -201,10 +206,9 @@ while True:
    for item in containers:
       prob=random.randint(0, 10)
       if prob == 0:
-         # 10% probabilidad de eliminar container
+         # 10% probability of removing container
          deletecontainer(item)
 
-         #### MIMOVE #####
          # Adding userid back to the list
          list_ids.append(item)
    
